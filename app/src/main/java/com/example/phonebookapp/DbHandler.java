@@ -124,6 +124,16 @@ public class DbHandler extends SQLiteOpenHelper {
         db.update(TABLE_NAME, values, "firstName=? AND lastName=?", new String[]{originalFirstName, originalLastName});
         db.close();
     }
+
+    // method for deleting a contact
+    public void deleteContact(String firstName, String lastName, String phoneNumber) {
+        // creating a variable a writable database
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // calling a method to delete the contact by comparing it with first and last name
+        db.delete(TABLE_NAME, "firstName=? AND lastName=? AND phoneNumber=?", new String[]{firstName, lastName, phoneNumber});
+        db.close();
+    }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // this method is called to check if the table exists already.

@@ -47,4 +47,13 @@
         android:text="@string/update_contact"
         android:textAllCaps="false" />
 
+    <!--button for deleting the contact-->
+    <Button
+        android:id="@+id/idBtnDeleteContact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="@string/delete_contact"
+        android:textAllCaps="false" />
+
 </LinearLayout>

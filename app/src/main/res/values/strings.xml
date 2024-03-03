@@ -12,4 +12,5 @@
     <string name="update_last_name">Update Last Name</string>
     <string name="update_phone_number">Update Phone Number</string>
     <string name="update_contact">Update Contact</string>
+    <string name="delete_contact">Delete Contact</string>
 </resources>

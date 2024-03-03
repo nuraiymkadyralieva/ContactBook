@@ -9,9 +9,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 public class UpdateContactActivity extends AppCompatActivity {
-    // variables for the editText, update button, strings and dbHandler
+    // variables for the editText, update and delete buttons, strings and dbHandler
     private EditText firstNameEdt, lastNameEdt, phoneNumberEdt;
-    private Button updateContactBtn;
+    private Button updateContactBtn, deleteContactBtn;
     private DbHandler dbHandler;
     String firstName, lastName, phoneNumber;
 
@@ -25,6 +25,7 @@ public class UpdateContactActivity extends AppCompatActivity {
         lastNameEdt = findViewById(R.id.idEdtLastName);
         phoneNumberEdt = findViewById(R.id.idEdtPhoneNumber);
         updateContactBtn = findViewById(R.id.idBtnUpdateContact);
+        deleteContactBtn = findViewById(R.id.idBtnDeleteContact);
 
         // initializing the dbHandler class
         dbHandler = new DbHandler(UpdateContactActivity.this);
@@ -53,6 +54,22 @@ public class UpdateContactActivity extends AppCompatActivity {
 
                 // displaying a toast message that the contact has been updated
                 Toast.makeText(UpdateContactActivity.this, "Contact Updated Successfully!", Toast.LENGTH_SHORT).show();
+
+                // returning to the all contacts list
+                Intent i = new Intent(UpdateContactActivity.this, ViewContacts.class);
+                startActivity(i);
+            }
+        });
+
+        // adding on click listener to the delete contact button
+        deleteContactBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // calling a method from the dbHandler to delete the contact
+                dbHandler.deleteContact(firstName, lastName, phoneNumber);
+
+                // displaying a toast message that the contact has been deleted
+                Toast.makeText(UpdateContactActivity.this, "Contact Deleted Successfully!", Toast.LENGTH_SHORT).show();
 
                 // returning to the all contacts list
                 Intent i = new Intent(UpdateContactActivity.this, ViewContacts.class);
