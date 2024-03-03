@@ -44,6 +44,13 @@ public class UpdateContactActivity extends AppCompatActivity {
         updateContactBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // validating if the text fields are empty or not
+                if (firstNameEdt.getText().toString().isEmpty() ||
+                        lastNameEdt.getText().toString().isEmpty() ||
+                        phoneNumberEdt.getText().toString().isEmpty()) {
+                    Toast.makeText(UpdateContactActivity.this, "Please enter all the data..", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 // calling update contact method from the dbHandler and passing all edited values
                 dbHandler.updateContact(firstName,
@@ -56,7 +63,7 @@ public class UpdateContactActivity extends AppCompatActivity {
                 Toast.makeText(UpdateContactActivity.this, "Contact Updated Successfully!", Toast.LENGTH_SHORT).show();
 
                 // returning to the all contacts list
-                Intent i = new Intent(UpdateContactActivity.this, ViewContacts.class);
+                Intent i = new Intent(UpdateContactActivity.this, MainActivity.class);
                 startActivity(i);
             }
         });
@@ -72,7 +79,7 @@ public class UpdateContactActivity extends AppCompatActivity {
                 Toast.makeText(UpdateContactActivity.this, "Contact Deleted Successfully!", Toast.LENGTH_SHORT).show();
 
                 // returning to the all contacts list
-                Intent i = new Intent(UpdateContactActivity.this, ViewContacts.class);
+                Intent i = new Intent(UpdateContactActivity.this, MainActivity.class);
                 startActivity(i);
             }
         });

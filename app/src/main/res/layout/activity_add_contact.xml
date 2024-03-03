@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:orientation="vertical"
+tools:context=".MainActivity">
+
+<!--Edit text to enter first name-->
+<EditText
+    android:id="@+id/idEdtFirstName"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:layout_margin="10dp"
+    android:inputType="textPersonName"
+    android:autofillHints="name"
+    android:hint="@string/first_name" />
+
+<!--edit text to enter last name-->
+<EditText
+    android:id="@+id/idEdtLastName"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:layout_margin="10dp"
+    android:inputType="textPersonName"
+    android:autofillHints="name"
+    android:hint="@string/last_name" />
+
+<!--edit text to enter phone number-->
+<EditText
+    android:id="@+id/idEdtPhoneNumber"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:layout_margin="10dp"
+    android:inputType="phone"
+    android:autofillHints="phone"
+    android:hint="@string/phone_number" />
+
+<!--button for adding new contact-->
+<Button
+    android:id="@+id/idBtnAddContact"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp"
+    android:text="@string/add_contact"
+    android:textAllCaps="false" />
+
+</LinearLayout>

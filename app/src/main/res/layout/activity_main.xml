@@ -1,60 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout
-
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".AddContact">
 
-    <!--Edit text to enter first name-->
-    <EditText
-        android:id="@+id/idEdtFirstName"
+    <!--recycler view for displaying all contacts-->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/idRVContacts"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_margin="10dp"
-        android:inputType="textPersonName"
-        android:autofillHints="name"
-        android:hint="@string/first_name" />
-
-    <!--edit text to enter last name-->
-    <EditText
-        android:id="@+id/idEdtLastName"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_margin="10dp"
-        android:inputType="textPersonName"
-        android:autofillHints="name"
-        android:hint="@string/last_name" />
-
-    <!--edit text to enter phone number-->
-    <EditText
-        android:id="@+id/idEdtPhoneNumber"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_margin="10dp"
-        android:inputType="phone"
-        android:autofillHints="phone"
-        android:hint="@string/phone_number" />
+        android:layout_height="match_parent" />
 
     <!--button for adding new contact-->
     <Button
         android:id="@+id/idBtnAddContact"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_alignParentBottom="true"
         android:text="@string/add_contact"
         android:textAllCaps="false" />
 
-    <!--new button for listing all contacts-->
-    <Button
-        android:id="@+id/idBtnReadContacts"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:text="@string/all_contacts"
-        android:textAllCaps="false" />
-
-</LinearLayout>
+</RelativeLayout>
