@@ -6,6 +6,9 @@ package com.example.phonebookapp;
         import android.os.Bundle;
         import android.view.View;
         import android.widget.Button;
+        //import android.widget.Toast;
+
+        //import androidx.appcompat.widget.SearchView;
 
         import androidx.recyclerview.widget.LinearLayoutManager;
         import androidx.recyclerview.widget.RecyclerView;
@@ -14,8 +17,8 @@ package com.example.phonebookapp;
 public class MainActivity extends AppCompatActivity {
     // creating variables for the array list, add contact button, db handler, contact adapter and recycler view
     private ArrayList<ContactsModal> contactsModalArrayList;
-
     private Button addContactBtn;
+    //private SearchView searchView;
     private DbHandler dbHandler;
     private ContactRVAdapter contactRVAdapter;
     private RecyclerView contactsRV;
@@ -28,11 +31,13 @@ public class MainActivity extends AppCompatActivity {
         // initializing all variables
         contactsModalArrayList = new ArrayList<>();
 
+        //searchView = findViewById(R.id.search_view);
+
         addContactBtn = findViewById(R.id.idBtnAddContact);
 
         dbHandler = new DbHandler(MainActivity.this);
 
-        // getting the course array list from the dbHandler class
+        // getting the contacts array list from the dbHandler class
         contactsModalArrayList = dbHandler.readContacts();
 
         // passing the array list to the ContactRVAdapter class
@@ -56,5 +61,22 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
+        /*searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if(contactsModalArrayList.contains(query)){
+                    // adapter.getFilter().filter(query);
+                }else{
+                    Toast.makeText(MainActivity.this, "No Match found",Toast.LENGTH_LONG).show();
+                }
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //    adapter.getFilter().filter(newText);
+                return false;
+            }
+        });*/
     }
 }
