@@ -15,6 +15,9 @@
         android:theme="@style/Theme.PhoneBookApp"
         tools:targetApi="31">
         <activity
+            android:name=".UpdateContactActivity"
+            android:exported="false" />
+        <activity
             android:name=".ViewContacts"
             android:exported="false" />
         <activity

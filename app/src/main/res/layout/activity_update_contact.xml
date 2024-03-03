@@ -1,60 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout
-
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".UpdateContactActivity">
 
-    <!--Edit text to enter first name-->
+    <!--Edit text to update first name-->
     <EditText
         android:id="@+id/idEdtFirstName"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_margin="10dp"
-        android:inputType="textPersonName"
         android:autofillHints="name"
-        android:hint="@string/first_name" />
+        android:inputType="textPersonName"
+        android:hint="@string/update_first_name" />
 
-    <!--edit text to enter last name-->
+    <!--edit text to update last name-->
     <EditText
         android:id="@+id/idEdtLastName"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_margin="10dp"
-        android:inputType="textPersonName"
         android:autofillHints="name"
-        android:hint="@string/last_name" />
+        android:inputType="textPersonName"
+        android:hint="@string/update_last_name" />
 
-    <!--edit text to enter phone number-->
+    <!--edit text to update phone number-->
     <EditText
         android:id="@+id/idEdtPhoneNumber"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_margin="10dp"
-        android:inputType="phone"
         android:autofillHints="phone"
-        android:hint="@string/phone_number" />
+        android:inputType="phone"
+        android:hint="@string/update_phone_number" />
 
-    <!--button for adding new contact-->
+    <!--button for updating the contact-->
     <Button
-        android:id="@+id/idBtnAddContact"
+        android:id="@+id/idBtnUpdateContact"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:text="@string/add_contact"
-        android:textAllCaps="false" />
-
-    <!--new button for listing all contacts-->
-    <Button
-        android:id="@+id/idBtnReadContacts"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:text="@string/all_contacts"
+        android:text="@string/update_contact"
         android:textAllCaps="false" />
 
 </LinearLayout>

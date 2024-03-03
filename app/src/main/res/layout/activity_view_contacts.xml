@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".ViewContacts">
 
-    <!--recycler view for displaying our courses-->
+    <!--recycler view for displaying all contacts-->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/idRVContacts"
         android:layout_width="match_parent"

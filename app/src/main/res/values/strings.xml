@@ -8,4 +8,8 @@
     <string name="read_phone_number">Phone Number</string>
     <string name="read_last_name">Last Name</string>
     <string name="read_first_name">First Name</string>
+    <string name="update_first_name">Update First Name</string>
+    <string name="update_last_name">Update Last Name</string>
+    <string name="update_phone_number">Update Phone Number</string>
+    <string name="update_contact">Update Contact</string>
 </resources>

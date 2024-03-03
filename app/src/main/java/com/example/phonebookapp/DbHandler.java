@@ -9,111 +9,120 @@ import java.util.ArrayList;
 
 public class DbHandler extends SQLiteOpenHelper {
 
-    // creating a constant variables for our database.
-    // below variable is for our database name.
+    // creating a constant variables for our database
+    // final = constant
+    // database name
     private static final String DB_NAME = "phoneBookDb";
 
-    // below int is our database version
+    // database version
     private static final int DB_VERSION = 1;
 
-    // below variable is for our table name.
+    // table name.
     private static final String TABLE_NAME = "contacts";
 
-    // below variable is for our id column.
+    // id column.
     private static final String ID_COL = "id";
 
-    // below variable is for our course name column
+    // firstName column
     private static final String FIRST_NAME_COL = "firstName";
 
-    // below variable id for our course duration column.
+    // lastName column.
     private static final String LAST_NAME_COL = "lastName";
 
-    // below variable for our course description column.
+    // phoneNumber column.
     private static final String PHONE_NUMBER_COL = "phoneNumber";
 
-    // creating a constructor for our database handler.
+    // constructor for our database handler
     public DbHandler(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
 
-    // below method is for creating a database by running a sqlite query
+    // method for creating a database by running a sqlite query
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // on below line we are creating
-        // an sqlite query and we are
-        // setting our column names
-        // along with their data types.
+        // creating an sqlite query and setting our column names along with their data types.
         String query = "CREATE TABLE " + TABLE_NAME + " ("
                 + ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + FIRST_NAME_COL + " TEXT,"
                 + LAST_NAME_COL + " TEXT,"
                 + PHONE_NUMBER_COL + " TEXT)";
 
-        // at last we are calling a exec sql
-        // method to execute above sql query
+        // calling a exec sql method to execute the sql query
         db.execSQL(query);
     }
 
-    // this method is use to add new course to our sqlite database.
-
+    // method to add new contact the database.
     public void addNewContact(String firstName, String lastName, String phoneNumber) {
-        // on below line we are creating a variable for
-        // our sqlite database and calling writable method
-        // as we are writing data in our database.
+        // creating a variable for the sqlite database and calling writable method
+        // to write data in the database.
         SQLiteDatabase db = this.getWritableDatabase();
 
-        // on below line we are creating a
-        // variable for content values.
+        // variable for content values
         ContentValues values = new ContentValues();
 
-        // on below line we are passing all values
-        // along with its key and value pair.
+        // passing all values along with its key and value pair
         values.put(FIRST_NAME_COL, firstName);
         values.put(LAST_NAME_COL, lastName);
         values.put(PHONE_NUMBER_COL, phoneNumber);
 
-        // after adding all values we are passing
-        // content values to our table.
+        // passing content values to the table
         db.insert(TABLE_NAME, null, values);
 
-        // at last we are closing our
-        // database after adding database.
+        // closing the database after adding the data
         db.close();
     }
 
-    // we have created a new method for reading all the courses.
+    // method for reading all contacts
     public ArrayList<ContactsModal> readContacts()
     {
-        // on below line we are creating a
-        // database for reading our database.
+        // calling getReadableDatabase to get a database to read from
         SQLiteDatabase db = this.getReadableDatabase();
 
-        // on below line we are creating a cursor with query to
-        // read data from database.
+        // creating a cursor with query to read data from the database
         Cursor cursorContacts
                 = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
 
-        // on below line we are creating a new array list.
+        //  creating a new array list
         ArrayList<ContactsModal> contactsModalArrayList
                 = new ArrayList<>();
 
-        // moving our cursor to first position.
+        // moving cursor to first position
         if (cursorContacts.moveToFirst()) {
             do {
-                // on below line we are adding the data from
-                // cursor to our array list.
+                // adding the data from cursor to the array list
                 contactsModalArrayList.add(new ContactsModal(
                         cursorContacts.getString(1),
                         cursorContacts.getString(2),
                         cursorContacts.getString(3)));
             } while (cursorContacts.moveToNext());
-            // moving our cursor to next.
+            // moving the cursor to next
         }
 
-        // at last closing our cursor
-        // and returning our array list.
+        // closing the cursor and returning the array list
         cursorContacts.close();
         return contactsModalArrayList;
+    }
+
+    //method for updating the contacts
+    public void updateContact(String originalFirstName,
+                              String originalLastName,
+                              String firstName,
+                              String lastName,
+                              String phoneNumber) {
+
+        // calling a method to get writable database
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        // passing all values along with its key and value pair.
+        values.put(FIRST_NAME_COL, firstName);
+        values.put(LAST_NAME_COL, lastName);
+        values.put(PHONE_NUMBER_COL, phoneNumber);
+
+        // calling an update method to update the database with the passed values.
+        // and comparing it with firstName and lastName of the contact
+        db.update(TABLE_NAME, values, "firstName=? AND lastName=?", new String[]{originalFirstName, originalLastName});
+        db.close();
     }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

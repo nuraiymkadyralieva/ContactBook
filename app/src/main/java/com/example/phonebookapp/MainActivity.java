@@ -11,7 +11,7 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    // creating variables for our edittext, button and dbhandler
+    // creating variables for the editText fields, add and read buttons and dbHandler
     private EditText firstNameEdt, lastNameEdt, phoneNumberEdt;
     private Button addContactBtn, readContactsBtn;
     private DbHandler dbHandler;
@@ -21,38 +21,36 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // initializing all our variables.
+        // initializing all variables
         firstNameEdt = findViewById(R.id.idEdtFirstName);
         lastNameEdt = findViewById(R.id.idEdtLastName);
         phoneNumberEdt = findViewById(R.id.idEdtPhoneNumber);
         addContactBtn = findViewById(R.id.idBtnAddContact);
         readContactsBtn = findViewById(R.id.idBtnReadContacts);
 
-        // creating a new dbhandler class
-        // and passing our context to it.
+        // creating a new dbHandler class and passing the context to it
         dbHandler = new DbHandler(MainActivity.this);
 
-        // below line is to add on click listener for our add course button.
+        // adding on click listener to the add contact button
         addContactBtn.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                // below line is to get data from all edit text fields.
+                // getting data from all edit text fields
                 String firstName = firstNameEdt.getText().toString();
                 String lastName = lastNameEdt.getText().toString();
                 String phoneNumber = phoneNumberEdt.getText().toString();
 
-                // validating if the text fields are empty or not.
+                // validating if the text fields are empty or not
                 if (firstName.isEmpty() && lastName.isEmpty() && phoneNumber.isEmpty()) {
                     Toast.makeText(MainActivity.this, "Please enter all the data..", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                // on below line we are calling a method to add new
-                // course to sqlite data and pass all our values to it.
+                // calling a method to add new contact to sqlite data and pass all values to it
                 dbHandler.addNewContact(firstName, lastName, phoneNumber);
 
-                // after adding the data we are displaying a toast message.
+                // displaying a toast message after adding the data
                 Toast.makeText(MainActivity.this, "Contact has been added.", Toast.LENGTH_SHORT).show();
                 firstNameEdt.setText("");
                 lastNameEdt.setText("");
@@ -64,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                // opening a new activity via a intent.
+                // opening a new activity via intent
                 Intent i = new Intent(MainActivity.this, ViewContacts.class);
                 startActivity(i);
             }

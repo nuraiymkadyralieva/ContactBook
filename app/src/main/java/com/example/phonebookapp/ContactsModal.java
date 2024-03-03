@@ -1,8 +1,7 @@
 package com.example.phonebookapp;
 
 public class ContactsModal {
-    // variables for our coursename,
-    // description, tracks and duration, id.
+    // variables for firstName, lastName, phoneNumber and id.
     private String firstName;
     private String lastName;
     private String phoneNumber;
