@@ -1,11 +1,18 @@
 package com.example.phonebookapp;
 
-public class ContactsModal {
-    // variables for firstName, lastName, phoneNumber and id.
+public class ContactsModel {
+    // fields for firstName, lastName, phoneNumber and id.
     private String firstName;
     private String lastName;
     private String phoneNumber;
     private int id;
+
+    // constructor
+    public ContactsModel(String firstName, String lastName, String phoneNumber) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+    }
 
     // creating getter and setter methods
     public String getFirstName() {
@@ -37,12 +44,5 @@ public class ContactsModal {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    // constructor
-    public ContactsModal(String firstName, String lastName, String phoneNumber) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.phoneNumber = phoneNumber;
     }
 }

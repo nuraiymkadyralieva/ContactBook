@@ -1,15 +1,16 @@
 package com.example.phonebookapp;
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
 public class DbHandler extends SQLiteOpenHelper {
 
-    // creating a constant variables for our database
+    // creating a constant variables for the database
     // final = constant
     // database name
     private static final String DB_NAME = "phoneBookDb";
@@ -17,27 +18,27 @@ public class DbHandler extends SQLiteOpenHelper {
     // database version
     private static final int DB_VERSION = 1;
 
-    // table name.
+    // table name
     private static final String TABLE_NAME = "contacts";
 
-    // id column.
+    // id column
     private static final String ID_COL = "id";
 
     // firstName column
     private static final String FIRST_NAME_COL = "firstName";
 
-    // lastName column.
+    // lastName column
     private static final String LAST_NAME_COL = "lastName";
 
-    // phoneNumber column.
+    // phoneNumber column
     private static final String PHONE_NUMBER_COL = "phoneNumber";
 
-    // constructor for our database handler
+    // constructor for the database handler
     public DbHandler(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
 
-    // method for creating a database by running a sqlite query
+    // method for creating the database by running a sqlite query
     @Override
     public void onCreate(SQLiteDatabase db) {
         // creating an sqlite query and setting our column names along with their data types.
@@ -51,10 +52,10 @@ public class DbHandler extends SQLiteOpenHelper {
         db.execSQL(query);
     }
 
-    // method to add new contact the database.
+    // method to add new contact to the database
     public void addNewContact(String firstName, String lastName, String phoneNumber) {
         // creating a variable for the sqlite database and calling writable method
-        // to write data in the database.
+        // to write data in the database
         SQLiteDatabase db = this.getWritableDatabase();
 
         // variable for content values
@@ -73,7 +74,7 @@ public class DbHandler extends SQLiteOpenHelper {
     }
 
     // method for reading all contacts
-    public ArrayList<ContactsModal> readContacts()
+    public ArrayList<ContactsModel> readContacts()
     {
         // calling getReadableDatabase to get a database to read from
         SQLiteDatabase db = this.getReadableDatabase();
@@ -83,24 +84,24 @@ public class DbHandler extends SQLiteOpenHelper {
                 = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
 
         //  creating a new array list
-        ArrayList<ContactsModal> contactsModalArrayList
+        ArrayList<ContactsModel> contactsModelArrayList
                 = new ArrayList<>();
 
         // moving cursor to first position
         if (cursorContacts.moveToFirst()) {
             do {
                 // adding the data from cursor to the array list
-                contactsModalArrayList.add(new ContactsModal(
+                contactsModelArrayList.add(new ContactsModel(
                         cursorContacts.getString(1),
                         cursorContacts.getString(2),
                         cursorContacts.getString(3)));
             } while (cursorContacts.moveToNext());
-            // moving the cursor to next
+            // moving the cursor to the next contact
         }
 
         // closing the cursor and returning the array list
         cursorContacts.close();
-        return contactsModalArrayList;
+        return contactsModelArrayList;
     }
 
     //method for updating the contacts
@@ -119,7 +120,7 @@ public class DbHandler extends SQLiteOpenHelper {
         values.put(LAST_NAME_COL, lastName);
         values.put(PHONE_NUMBER_COL, phoneNumber);
 
-        // calling an update method to update the database with the passed values.
+        // calling an update method to update the database with the passed values
         // and comparing it with firstName and lastName of the contact
         db.update(TABLE_NAME, values, "firstName=? AND lastName=?", new String[]{originalFirstName, originalLastName});
         db.close();
@@ -130,13 +131,13 @@ public class DbHandler extends SQLiteOpenHelper {
         // creating a variable a writable database
         SQLiteDatabase db = this.getWritableDatabase();
 
-        // calling a method to delete the contact by comparing it with first and last name
+        // calling a method to delete the contact by comparing its first and last name
         db.delete(TABLE_NAME, "firstName=? AND lastName=? AND phoneNumber=?", new String[]{firstName, lastName, phoneNumber});
         db.close();
     }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // this method is called to check if the table exists already.
+        // this method is called to check if the table already exists
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         onCreate(db);
     }

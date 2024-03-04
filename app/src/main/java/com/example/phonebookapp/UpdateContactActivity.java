@@ -1,15 +1,17 @@
 package com.example.phonebookapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
-import android.content.Intent;
+
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
+import android.widget.Button;
+import android.content.Intent;
+import android.widget.EditText;
 
 public class UpdateContactActivity extends AppCompatActivity {
-    // variables for the editText, update and delete buttons, strings and dbHandler
+    // variables for the editText, update and delete buttons, local strings and dbHandler
     private EditText firstNameEdt, lastNameEdt, phoneNumberEdt;
     private Button updateContactBtn, deleteContactBtn;
     private DbHandler dbHandler;
@@ -48,7 +50,13 @@ public class UpdateContactActivity extends AppCompatActivity {
                 if (firstNameEdt.getText().toString().isEmpty() ||
                         lastNameEdt.getText().toString().isEmpty() ||
                         phoneNumberEdt.getText().toString().isEmpty()) {
-                    Toast.makeText(UpdateContactActivity.this, "Please enter all the data..", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UpdateContactActivity.this, "Please fill all fields!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // validating the phone number is the right amount of digits
+                if (phoneNumberEdt.getText().toString().length() < 3 || phoneNumberEdt.getText().toString().length() > 14) {
+                    Toast.makeText(UpdateContactActivity.this, "Phone number should be between 3 and 14 digits!", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
