@@ -5,13 +5,15 @@ public class ContactsModel {
     private String firstName;
     private String lastName;
     private String phoneNumber;
+    private String photoPath;
     private int id;
 
     // constructor
-    public ContactsModel(String firstName, String lastName, String phoneNumber) {
+    public ContactsModel(String firstName, String lastName, String phoneNumber, String string) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
+        this.photoPath = photoPath;
     }
 
     // creating getter and setter methods
@@ -45,4 +47,6 @@ public class ContactsModel {
     public void setId(int id) {
         this.id = id;
     }
+    public String getPhotoPath() { return photoPath; }
+    public void setPhotoPath(String photoPath) { this.photoPath = photoPath; }
 }

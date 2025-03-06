@@ -32,6 +32,7 @@ public class DbHandler extends SQLiteOpenHelper {
 
     // phoneNumber column
     private static final String PHONE_NUMBER_COL = "phoneNumber";
+    private static final String PHOTO_PATH_COL = "photoPath";
 
     // constructor for the database handler
     public DbHandler(Context context) {
@@ -46,14 +47,15 @@ public class DbHandler extends SQLiteOpenHelper {
                 + ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + FIRST_NAME_COL + " TEXT,"
                 + LAST_NAME_COL + " TEXT,"
-                + PHONE_NUMBER_COL + " TEXT)";
+                + PHONE_NUMBER_COL + " TEXT,"
+                + PHOTO_PATH_COL + " TEXT)";
 
         // calling a exec sql method to execute the sql query
         db.execSQL(query);
     }
 
     // method to add new contact to the database
-    public void addNewContact(String firstName, String lastName, String phoneNumber) {
+    public void addNewContact(String firstName, String lastName, String phoneNumber, String photoPath) {
         // creating a variable for the sqlite database and calling writable method
         // to write data in the database
         SQLiteDatabase db = this.getWritableDatabase();
@@ -65,6 +67,7 @@ public class DbHandler extends SQLiteOpenHelper {
         values.put(FIRST_NAME_COL, firstName);
         values.put(LAST_NAME_COL, lastName);
         values.put(PHONE_NUMBER_COL, phoneNumber);
+        values.put(PHOTO_PATH_COL, photoPath);
 
         // passing content values to the table
         db.insert(TABLE_NAME, null, values);
@@ -90,13 +93,12 @@ public class DbHandler extends SQLiteOpenHelper {
         // moving cursor to first position
         if (cursorContacts.moveToFirst()) {
             do {
-                // adding the data from cursor to the array list
                 contactsModelArrayList.add(new ContactsModel(
                         cursorContacts.getString(1),
                         cursorContacts.getString(2),
-                        cursorContacts.getString(3)));
+                        cursorContacts.getString(3),
+                        cursorContacts.getString(4))); // Читаем photoPath
             } while (cursorContacts.moveToNext());
-            // moving the cursor to the next contact
         }
 
         // closing the cursor and returning the array list
@@ -109,7 +111,8 @@ public class DbHandler extends SQLiteOpenHelper {
                               String originalLastName,
                               String firstName,
                               String lastName,
-                              String phoneNumber) {
+                              String phoneNumber,
+                              String photoPath) {
 
         // calling a method to get writable database
         SQLiteDatabase db = this.getWritableDatabase();
@@ -119,6 +122,7 @@ public class DbHandler extends SQLiteOpenHelper {
         values.put(FIRST_NAME_COL, firstName);
         values.put(LAST_NAME_COL, lastName);
         values.put(PHONE_NUMBER_COL, phoneNumber);
+        values.put(PHOTO_PATH_COL, photoPath);
 
         // calling an update method to update the database with the passed values
         // and comparing it with firstName and lastName of the contact
