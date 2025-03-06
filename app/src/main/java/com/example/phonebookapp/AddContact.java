@@ -7,10 +7,10 @@ import androidx.core.content.FileProvider;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -37,6 +38,7 @@ public class AddContact extends AppCompatActivity {
     private static final int REQUEST_GALLERY = 1;
     private static final int REQUEST_CAMERA = 2;
     private static final int REQUEST_PERMISSION = 100;
+    private static final int REQUEST_WRITE_MEDIA = 101;
 
     private DbHandler dbHandler;
 
@@ -45,7 +47,6 @@ public class AddContact extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_contact);
 
-        // Инициализация элементов
         firstNameEdt = findViewById(R.id.idEdtFirstName);
         lastNameEdt = findViewById(R.id.idEdtLastName);
         phoneNumberEdt = findViewById(R.id.idEdtPhoneNumber);
@@ -54,21 +55,17 @@ public class AddContact extends AppCompatActivity {
 
         dbHandler = new DbHandler(AddContact.this);
 
-        // Нажатие на аватарку для выбора фото
         avatarImageView.setOnClickListener(view -> checkPermissionsAndOpenPicker());
-
-        // Нажатие на кнопку "Добавить контакт"
         addContactBtn.setOnClickListener(v -> saveContact());
     }
 
-    // Проверка разрешений
     private void checkPermissionsAndOpenPicker() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // Android 13+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_MEDIA_IMAGES}, REQUEST_PERMISSION);
                 return;
             }
-        } else { // Android 12 и ниже
+        } else {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
                     ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{
@@ -81,7 +78,6 @@ public class AddContact extends AppCompatActivity {
         openImagePicker();
     }
 
-    // Открытие выбора фото
     private void openImagePicker() {
         Intent pickPhoto = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         Intent takePhoto = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -90,7 +86,7 @@ public class AddContact extends AppCompatActivity {
             File photoFile = createImageFile();
             if (photoFile != null) {
                 photoUri = FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".provider", photoFile);
-                photoPath = photoFile.getAbsolutePath(); // Сохраняем путь к файлу
+                photoPath = photoFile.getAbsolutePath();
                 takePhoto.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
             }
         }
@@ -100,11 +96,10 @@ public class AddContact extends AppCompatActivity {
         startActivityForResult(chooser, REQUEST_GALLERY);
     }
 
-    // Создание временного файла
     private File createImageFile() {
         try {
             String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            File storageDir = getExternalFilesDir(null);
+            File storageDir = getExternalFilesDir(null); // Используем внутреннее хранилище
             return File.createTempFile("IMG_" + timeStamp, ".jpg", storageDir);
         } catch (IOException e) {
             e.printStackTrace();
@@ -112,25 +107,46 @@ public class AddContact extends AppCompatActivity {
         }
     }
 
-    // Обработка результата выбора фото
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_GALLERY && data != null) {
-                // Фото из галереи
                 photoUri = data.getData();
-                photoPath = getRealPathFromURI(photoUri); // Получаем реальный путь
+                photoPath = getRealPathFromURI(photoUri);
                 setCircularImage(photoUri);
             } else if (requestCode == REQUEST_GALLERY && photoUri != null) {
-                // Фото с камеры
                 setCircularImage(photoUri);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    saveImageToMediaStore();
+                }
             }
         }
     }
 
-    // Установка круглого изображения
+    private void saveImageToMediaStore() {
+        if (photoUri != null) {
+            try {
+                ContentValues values = new ContentValues();
+                values.put(MediaStore.Images.Media.DISPLAY_NAME, "IMG_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".jpg");
+                values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+                values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/PhoneBookApp");
+                Uri imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                if (imageUri != null) {
+                    try (FileOutputStream outputStream = (FileOutputStream) getContentResolver().openOutputStream(imageUri)) {
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), photoUri);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+                    }
+                    photoPath = imageUri.toString(); // Обновляем photoPath для MediaStore URI
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Ошибка сохранения в MediaStore", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
     private void setCircularImage(Uri uri) {
         try {
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
@@ -142,7 +158,6 @@ public class AddContact extends AppCompatActivity {
         }
     }
 
-    // Обрезка изображения в круг
     private Bitmap getCircularBitmap(Bitmap bitmap) {
         int size = Math.min(bitmap.getWidth(), bitmap.getHeight());
         Bitmap output = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
@@ -155,7 +170,6 @@ public class AddContact extends AppCompatActivity {
         return output;
     }
 
-    // Получение реального пути из URI
     private String getRealPathFromURI(Uri contentUri) {
         String[] proj = { MediaStore.Images.Media.DATA };
         android.database.Cursor cursor = getContentResolver().query(contentUri, proj, null, null, null);
@@ -167,18 +181,18 @@ public class AddContact extends AppCompatActivity {
         return path;
     }
 
-    // Обработка разрешений
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_PERMISSION && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             openImagePicker();
+        } else if (requestCode == REQUEST_WRITE_MEDIA && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            saveImageToMediaStore();
         } else {
             Toast.makeText(this, "Разрешение отклонено!", Toast.LENGTH_SHORT).show();
         }
     }
 
-    // Сохранение контакта
     private void saveContact() {
         String firstName = firstNameEdt.getText().toString();
         String lastName = lastNameEdt.getText().toString();
@@ -187,6 +201,16 @@ public class AddContact extends AppCompatActivity {
         if (firstName.isEmpty() || lastName.isEmpty() || phoneNumber.isEmpty()) {
             Toast.makeText(this, "Please fill all fields!", Toast.LENGTH_SHORT).show();
             return;
+        }
+
+        if (photoPath == null || photoPath.isEmpty()) {
+            photoPath = ""; // Устанавливаем пустую строку, если фото не выбрано
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_MEDIA);
+                return;
+            }
+            saveImageToMediaStore();
         }
 
         dbHandler.addNewContact(firstName, lastName, phoneNumber, photoPath);

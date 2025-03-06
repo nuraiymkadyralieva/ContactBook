@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import android.Manifest;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -20,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -35,6 +37,7 @@ public class UpdateContactActivity extends AppCompatActivity {
     private static final int REQUEST_GALLERY = 1;
     private static final int REQUEST_PERMISSION = 100;
     private static final int REQUEST_CALL_PERMISSION = 101;
+    private static final int REQUEST_WRITE_MEDIA = 102;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +64,12 @@ public class UpdateContactActivity extends AppCompatActivity {
         lastNameEdt.setText(lastName);
         phoneNumberEdt.setText(phoneNumber);
         if (photoPath != null && !photoPath.isEmpty()) {
-            setCircularImage(Uri.fromFile(new File(photoPath)));
+            try {
+                setCircularImage(Uri.parse(photoPath));
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Ошибка загрузки аватарки", Toast.LENGTH_SHORT).show();
+            }
         }
 
         avatarImageView.setOnClickListener(view -> checkPermissionsAndOpenPicker());
@@ -81,6 +89,16 @@ public class UpdateContactActivity extends AppCompatActivity {
                 return;
             }
 
+            if (photoPath == null || photoPath.isEmpty()) {
+                photoPath = "";
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_MEDIA);
+                    return;
+                }
+                saveImageToMediaStore();
+            }
+
             dbHandler.updateContact(firstName, lastName, newFirstName, newLastName, newPhoneNumber, photoPath);
             Toast.makeText(this, "Contact Updated Successfully!", Toast.LENGTH_SHORT).show();
             Intent i = new Intent(UpdateContactActivity.this, MainActivity.class);
@@ -96,7 +114,6 @@ public class UpdateContactActivity extends AppCompatActivity {
             finish();
         });
 
-        // Обработчик кнопки Call
         callBtn.setOnClickListener(v -> {
             String phone = phoneNumberEdt.getText().toString();
             if (phone.isEmpty()) {
@@ -107,13 +124,12 @@ public class UpdateContactActivity extends AppCompatActivity {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CALL_PERMISSION);
             } else {
-                Intent callIntent = new Intent(Intent.ACTION_DIAL); // Используем ACTION_DIAL вместо ACTION_CALL для набора без прямого звонка
+                Intent callIntent = new Intent(Intent.ACTION_DIAL);
                 callIntent.setData(Uri.parse("tel:" + phone));
                 startActivity(callIntent);
             }
         });
 
-        // Обработчик кнопки Send Message
         sendMessageBtn.setOnClickListener(v -> {
             String phone = phoneNumberEdt.getText().toString();
             if (phone.isEmpty()) {
@@ -183,9 +199,34 @@ public class UpdateContactActivity extends AppCompatActivity {
             if (data != null) {
                 photoUri = data.getData();
                 photoPath = getRealPathFromURI(photoUri);
-                setCircularImage(photoUri);
+                setCircularImage(Uri.parse(photoPath));
             } else if (photoUri != null) {
                 setCircularImage(photoUri);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    saveImageToMediaStore();
+                }
+            }
+        }
+    }
+
+    private void saveImageToMediaStore() {
+        if (photoUri != null) {
+            try {
+                ContentValues values = new ContentValues();
+                values.put(MediaStore.Images.Media.DISPLAY_NAME, "IMG_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".jpg");
+                values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+                values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/PhoneBookApp");
+                Uri imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                if (imageUri != null) {
+                    try (FileOutputStream outputStream = (FileOutputStream) getContentResolver().openOutputStream(imageUri)) {
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), photoUri);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+                    }
+                    photoPath = imageUri.toString(); // Обновляем photoPath для MediaStore URI
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Ошибка сохранения в MediaStore", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -234,6 +275,8 @@ public class UpdateContactActivity extends AppCompatActivity {
             Intent callIntent = new Intent(Intent.ACTION_DIAL);
             callIntent.setData(Uri.parse("tel:" + phone));
             startActivity(callIntent);
+        } else if (requestCode == REQUEST_WRITE_MEDIA && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            saveImageToMediaStore();
         } else {
             Toast.makeText(this, "Разрешение отклонено!", Toast.LENGTH_SHORT).show();
         }

@@ -9,11 +9,11 @@ public class ContactsModel {
     private int id;
 
     // constructor
-    public ContactsModel(String firstName, String lastName, String phoneNumber, String string) {
+    public ContactsModel(String firstName, String lastName, String phoneNumber, String photoPath) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
-        this.photoPath = photoPath;
+        this.photoPath = photoPath != null ? photoPath : ""; // Устанавливаем пустую строку, если photoPath null
     }
 
     // creating getter and setter methods

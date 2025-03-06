@@ -1,91 +1,104 @@
 package com.example.phonebookapp;
 
-import java.util.ArrayList;
-
-import android.view.View;
-import android.content.Intent;
-import android.view.ViewGroup;
 import android.content.Context;
-import android.widget.TextView;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
+
 public class ContactRVAdapter extends RecyclerView.Adapter<ContactRVAdapter.ViewHolder> {
-    // variable for the array list and context
     private ArrayList<ContactsModel> contactsModelArrayList;
+    private Context context;
 
-    private final Context context;
-
-    // constructor
     public ContactRVAdapter(ArrayList<ContactsModel> contactsModelArrayList, Context context) {
         this.contactsModelArrayList = contactsModelArrayList;
         this.context = context;
     }
 
-    // method for filtering the recycler view data
     public void filterList(ArrayList<ContactsModel> filteredList) {
         contactsModelArrayList = filteredList;
-
-        // notify the adapter for a change in the recycler view
         notifyDataSetChanged();
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // inflating the layout file for the recycler view items
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.contact_item, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        // setting data to the views of recycler view item
         ContactsModel model = contactsModelArrayList.get(position);
-
         holder.contactFirstName.setText(model.getFirstName());
         holder.contactLastName.setText(model.getLastName());
         holder.contactPhoneNumber.setText(model.getPhoneNumber());
 
-        // add on click listener for the recycler view item
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                // calling an intent
-                Intent i = new Intent(context, UpdateContactActivity.class);
-
-                // passing all values
-                i.putExtra("firstName", model.getFirstName());
-                i.putExtra("lastName", model.getLastName());
-                i.putExtra("phoneNumber", model.getPhoneNumber());
-
-                // starting activity
-                context.startActivity(i);
+        // Загрузка аватарки
+        if (model.getPhotoPath() != null && !model.getPhotoPath().isEmpty()) {
+            try {
+                Uri uri = Uri.parse(model.getPhotoPath());
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), uri);
+                Bitmap circularBitmap = getCircularBitmap(bitmap);
+                holder.avatarImageView.setImageBitmap(circularBitmap);
+            } catch (Exception e) {
+                e.printStackTrace();
+                holder.avatarImageView.setImageResource(R.drawable.avatar); // Загрузка дефолтной аватарки при ошибке
             }
+        } else {
+            holder.avatarImageView.setImageResource(R.drawable.avatar);
+        }
+
+        holder.itemView.setOnClickListener(v -> {
+            Intent i = new Intent(context, UpdateContactActivity.class);
+            i.putExtra("firstName", model.getFirstName());
+            i.putExtra("lastName", model.getLastName());
+            i.putExtra("phoneNumber", model.getPhoneNumber());
+            i.putExtra("photoPath", model.getPhotoPath());
+            context.startActivity(i);
         });
     }
 
     @Override
     public int getItemCount() {
-        // returning the size of the array list
         return contactsModelArrayList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        // creating variables for the text views
-        private final TextView contactFirstName;
-        private final TextView contactLastName;
-        private final TextView contactPhoneNumber;
+        private TextView contactFirstName;
+        private TextView contactLastName;
+        private TextView contactPhoneNumber;
+        private ImageView avatarImageView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            // initializing the text views
             contactFirstName = itemView.findViewById(R.id.idFirstName);
             contactLastName = itemView.findViewById(R.id.idLastName);
             contactPhoneNumber = itemView.findViewById(R.id.idPhoneNumber);
+            avatarImageView = itemView.findViewById(R.id.idImgAvatar); // Предполагаем, что ImageView есть в contact_item.xml
         }
+    }
+
+    private Bitmap getCircularBitmap(Bitmap bitmap) {
+        int size = Math.min(bitmap.getWidth(), bitmap.getHeight());
+        Bitmap output = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+        android.graphics.Canvas canvas = new android.graphics.Canvas(output);
+        android.graphics.Paint paint = new android.graphics.Paint();
+        paint.setAntiAlias(true);
+        canvas.drawCircle(size / 2f, size / 2f, size / 2f, paint);
+        paint.setXfermode(new android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, (size - bitmap.getWidth()) / 2f, (size - bitmap.getHeight()) / 2f, paint);
+        return output;
     }
 }
