@@ -2,57 +2,77 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
     android:elevation="8dp"
-    app:cardCornerRadius="4dp"
-    tools:context=".AddContact">
+    app:cardCornerRadius="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="3dp"
-        android:orientation="vertical">
+        android:layout_height="138dp"
+        android:background="@color/light_pink"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
+        <!-- ImageView для аватарки (слева) -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/idImgAvatar"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="20dp"
+            android:clickable="true"
+            android:contentDescription="Avatar"
+            android:focusable="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/avatar"
+            app:shapeAppearance="@style/RoundedImageView"
+            app:strokeColor="@android:color/darker_gray"
+            app:strokeWidth="2dp" />
+
+        <!-- Контейнер для текста -->
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="2">
-
-            <!--text view for the contact first name-->
-            <TextView
-                android:id="@+id/idFirstName"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:padding="3dp"
-                android:text="@string/read_first_name"
-                android:textColor="@color/black" />
-
-            <!--text view for the contact last name-->
-            <TextView
-                android:id="@+id/idLastName"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:padding="3dp"
-                android:text="@string/read_last_name"
-                android:textColor="@color/black" />
-
-        </LinearLayout>
-
-        <!--text view for the contact phone number-->
-        <TextView
-            android:id="@+id/idPhoneNumber"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
             android:layout_weight="1"
-            android:padding="3dp"
-            android:text="@string/read_phone_number"
-            android:textColor="@color/black" />
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <!-- TextView для имени -->
+                <TextView
+                    android:id="@+id/idFirstName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="3dp"
+                    android:text="@string/read_first_name"
+                    android:textColor="@color/black" />
+
+                <!-- TextView для фамилии -->
+                <TextView
+                    android:id="@+id/idLastName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="3dp"
+                    android:text="@string/read_last_name"
+                    android:textColor="@color/black" />
+            </LinearLayout>
+
+            <!-- TextView для номера телефона -->
+            <TextView
+                android:id="@+id/idPhoneNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="3dp"
+                android:text="@string/read_phone_number"
+                android:textColor="@color/black" />
+        </LinearLayout>
 
     </LinearLayout>
 

@@ -4,4 +4,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="transparent">#1A000000</color>
     <color name="skyBlue">#C9E3F0</color>
+    <color name="light_pink">#FFEBEE</color> <!-- Светло-розовый оттенок -->
+
 </resources>

@@ -1,51 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout
-
-xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:tools="http://schemas.android.com/tools"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:orientation="vertical"
-tools:context=".MainActivity">
-
-<!--Edit text to enter first name-->
-<EditText
-    android:id="@+id/idEdtFirstName"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="48dp"
-    android:layout_margin="10dp"
-    android:inputType="textPersonName"
-    android:autofillHints="name"
-    android:hint="@string/first_name" />
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    tools:context=".MainActivity">
 
-<!--edit text to enter last name-->
-<EditText
-    android:id="@+id/idEdtLastName"
-    android:layout_width="match_parent"
-    android:layout_height="48dp"
-    android:layout_margin="10dp"
-    android:inputType="textPersonName"
-    android:autofillHints="name"
-    android:hint="@string/last_name" />
+    <!-- Avatar ImageView -->
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/idImgAvatar"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/avatar"
+        android:scaleType="centerCrop"
+        android:clickable="true"
+        android:focusable="true"
+        android:contentDescription="Avatar"
+        app:strokeColor="@android:color/darker_gray"
+        app:strokeWidth="2dp"
+        app:shapeAppearance="@style/RoundedImageView"/>
 
-<!--edit text to enter phone number-->
-<EditText
-    android:id="@+id/idEdtPhoneNumber"
-    android:layout_width="match_parent"
-    android:layout_height="48dp"
-    android:layout_margin="10dp"
-    android:inputType="phone"
-    android:autofillHints="phone"
-    android:hint="@string/phone_number" />
+    <!--Edit text to enter first name-->
+    <EditText
+        android:id="@+id/idEdtFirstName"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_margin="10dp"
+        android:inputType="textPersonName"
+        android:autofillHints="name"
+        android:hint="@string/first_name" />
 
-<!--button for adding new contact-->
-<Button
-    android:id="@+id/idBtnAddContact"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="10dp"
-    android:text="@string/add_contact"
-    android:textAllCaps="false" />
+    <!--edit text to enter last name-->
+    <EditText
+        android:id="@+id/idEdtLastName"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_margin="10dp"
+        android:inputType="textPersonName"
+        android:autofillHints="name"
+        android:hint="@string/last_name" />
+
+    <!--edit text to enter phone number-->
+    <EditText
+        android:id="@+id/idEdtPhoneNumber"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_margin="10dp"
+        android:inputType="phone"
+        android:autofillHints="phone"
+        android:hint="@string/phone_number" />
+
+    <!--button for adding new contact-->
+    <Button
+        android:id="@+id/idBtnAddContact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="@string/add_contact"
+        android:textAllCaps="false" />
 
 </LinearLayout>
