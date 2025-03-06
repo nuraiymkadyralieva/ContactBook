@@ -67,11 +67,23 @@ public class MainActivity extends AppCompatActivity {
 
     private void filterList(String text) {
         ArrayList<ContactsModel> filteredList = new ArrayList<>();
+        String query = text.toLowerCase().trim(); // Приводим запрос к нижнему регистру и убираем лишние пробелы
+
         for (ContactsModel contact : contactsModelArrayList) {
-            if (contact.getFirstName().toLowerCase().contains(text.toLowerCase())) {
+            String firstName = contact.getFirstName().toLowerCase();
+            String lastName = contact.getLastName().toLowerCase();
+            String phoneNumber = contact.getPhoneNumber().toLowerCase();
+            String fullName = firstName + " " + lastName; // Полное ФИО
+
+            // Проверяем совпадение по имени, фамилии, номеру телефона или полному ФИО
+            if (firstName.contains(query) ||
+                    lastName.contains(query) ||
+                    phoneNumber.contains(query) ||
+                    fullName.contains(query)) {
                 filteredList.add(contact);
             }
         }
+
         if (filteredList.isEmpty()) {
             Toast.makeText(MainActivity.this, "No Data Found..", Toast.LENGTH_SHORT).show();
         } else {
