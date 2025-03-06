@@ -26,48 +26,46 @@ import java.util.Date;
 
 public class UpdateContactActivity extends AppCompatActivity {
     private EditText firstNameEdt, lastNameEdt, phoneNumberEdt;
-    private Button updateContactBtn, deleteContactBtn;
+    private Button updateContactBtn, deleteContactBtn, callBtn, sendMessageBtn;
     private ImageView avatarImageView;
     private DbHandler dbHandler;
-    private String firstName, lastName, phoneNumber, photoPath; // Добавляем photoPath
+    private String firstName, lastName, phoneNumber, photoPath;
     private Uri photoUri;
 
     private static final int REQUEST_GALLERY = 1;
     private static final int REQUEST_PERMISSION = 100;
+    private static final int REQUEST_CALL_PERMISSION = 101;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_contact);
 
-        // Инициализация элементов
         firstNameEdt = findViewById(R.id.idEdtFirstName);
         lastNameEdt = findViewById(R.id.idEdtLastName);
         phoneNumberEdt = findViewById(R.id.idEdtPhoneNumber);
         updateContactBtn = findViewById(R.id.idBtnUpdateContact);
         deleteContactBtn = findViewById(R.id.idBtnDeleteContact);
+        callBtn = findViewById(R.id.idBtnCall);
+        sendMessageBtn = findViewById(R.id.idBtnSendMessage);
         avatarImageView = findViewById(R.id.idImgAvatar);
 
         dbHandler = new DbHandler(UpdateContactActivity.this);
 
-        // Получение данных из Intent
         firstName = getIntent().getStringExtra("firstName");
         lastName = getIntent().getStringExtra("lastName");
         phoneNumber = getIntent().getStringExtra("phoneNumber");
-        photoPath = getIntent().getStringExtra("photoPath"); // Получаем photoPath
+        photoPath = getIntent().getStringExtra("photoPath");
 
-        // Установка данных в поля
         firstNameEdt.setText(firstName);
         lastNameEdt.setText(lastName);
         phoneNumberEdt.setText(phoneNumber);
         if (photoPath != null && !photoPath.isEmpty()) {
-            setCircularImage(Uri.fromFile(new File(photoPath))); // Загружаем текущее фото
+            setCircularImage(Uri.fromFile(new File(photoPath)));
         }
 
-        // Обработчик клика на аватарку
         avatarImageView.setOnClickListener(view -> checkPermissionsAndOpenPicker());
 
-        // Обработчик кнопки "Обновить"
         updateContactBtn.setOnClickListener(v -> {
             String newFirstName = firstNameEdt.getText().toString();
             String newLastName = lastNameEdt.getText().toString();
@@ -83,16 +81,13 @@ public class UpdateContactActivity extends AppCompatActivity {
                 return;
             }
 
-            // Обновляем контакт с новым photoPath (или старым, если не изменяли)
             dbHandler.updateContact(firstName, lastName, newFirstName, newLastName, newPhoneNumber, photoPath);
-
             Toast.makeText(this, "Contact Updated Successfully!", Toast.LENGTH_SHORT).show();
             Intent i = new Intent(UpdateContactActivity.this, MainActivity.class);
             startActivity(i);
             finish();
         });
 
-        // Обработчик кнопки "Удалить"
         deleteContactBtn.setOnClickListener(v -> {
             dbHandler.deleteContact(firstName, lastName, phoneNumber);
             Toast.makeText(this, "Contact Deleted Successfully!", Toast.LENGTH_SHORT).show();
@@ -100,9 +95,38 @@ public class UpdateContactActivity extends AppCompatActivity {
             startActivity(i);
             finish();
         });
+
+        // Обработчик кнопки Call
+        callBtn.setOnClickListener(v -> {
+            String phone = phoneNumberEdt.getText().toString();
+            if (phone.isEmpty()) {
+                Toast.makeText(this, "Phone number is empty!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CALL_PERMISSION);
+            } else {
+                Intent callIntent = new Intent(Intent.ACTION_DIAL); // Используем ACTION_DIAL вместо ACTION_CALL для набора без прямого звонка
+                callIntent.setData(Uri.parse("tel:" + phone));
+                startActivity(callIntent);
+            }
+        });
+
+        // Обработчик кнопки Send Message
+        sendMessageBtn.setOnClickListener(v -> {
+            String phone = phoneNumberEdt.getText().toString();
+            if (phone.isEmpty()) {
+                Toast.makeText(this, "Phone number is empty!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Intent smsIntent = new Intent(Intent.ACTION_VIEW);
+            smsIntent.setData(Uri.parse("sms:" + phone));
+            startActivity(smsIntent);
+        });
     }
 
-    // Проверка разрешений
     private void checkPermissionsAndOpenPicker() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
@@ -122,7 +146,6 @@ public class UpdateContactActivity extends AppCompatActivity {
         openImagePicker();
     }
 
-    // Открытие выбора фото
     private void openImagePicker() {
         Intent pickPhoto = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         Intent takePhoto = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -141,7 +164,6 @@ public class UpdateContactActivity extends AppCompatActivity {
         startActivityForResult(chooser, REQUEST_GALLERY);
     }
 
-    // Создание временного файла
     private File createImageFile() {
         try {
             String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -153,25 +175,21 @@ public class UpdateContactActivity extends AppCompatActivity {
         }
     }
 
-    // Обработка результата выбора фото
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == RESULT_OK && requestCode == REQUEST_GALLERY) {
             if (data != null) {
-                // Фото из галереи
                 photoUri = data.getData();
                 photoPath = getRealPathFromURI(photoUri);
                 setCircularImage(photoUri);
             } else if (photoUri != null) {
-                // Фото с камеры
                 setCircularImage(photoUri);
             }
         }
     }
 
-    // Установка круглого изображения
     private void setCircularImage(Uri uri) {
         try {
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
@@ -183,7 +201,6 @@ public class UpdateContactActivity extends AppCompatActivity {
         }
     }
 
-    // Обрезка изображения в круг
     private Bitmap getCircularBitmap(Bitmap bitmap) {
         int size = Math.min(bitmap.getWidth(), bitmap.getHeight());
         Bitmap output = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
@@ -196,7 +213,6 @@ public class UpdateContactActivity extends AppCompatActivity {
         return output;
     }
 
-    // Получение реального пути из URI
     private String getRealPathFromURI(Uri contentUri) {
         String[] proj = { MediaStore.Images.Media.DATA };
         android.database.Cursor cursor = getContentResolver().query(contentUri, proj, null, null, null);
@@ -208,12 +224,16 @@ public class UpdateContactActivity extends AppCompatActivity {
         return path;
     }
 
-    // Обработка разрешений
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_PERMISSION && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             openImagePicker();
+        } else if (requestCode == REQUEST_CALL_PERMISSION && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            String phone = phoneNumberEdt.getText().toString();
+            Intent callIntent = new Intent(Intent.ACTION_DIAL);
+            callIntent.setData(Uri.parse("tel:" + phone));
+            startActivity(callIntent);
         } else {
             Toast.makeText(this, "Разрешение отклонено!", Toast.LENGTH_SHORT).show();
         }

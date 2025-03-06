@@ -75,4 +75,22 @@
         android:text="@string/delete_contact"
         android:textAllCaps="false" />
 
+    <!-- Новая кнопка Call -->
+    <Button
+        android:id="@+id/idBtnCall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="Call"
+        android:textAllCaps="false" />
+
+    <!-- Новая кнопка Send Message -->
+    <Button
+        android:id="@+id/idBtnSendMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="Send Message"
+        android:textAllCaps="false" />
+
 </LinearLayout>
